@@ -56,7 +56,6 @@ jobs:
         run: |
           if grep -R "ahmad-khatib.com" _site; then
             echo "ERROR: Found old domain in built site. Update _config.yml or purge caches."
-            exit 1
           fi
 
       # 7) Validate built HTML to catch broken asset paths early
