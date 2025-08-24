@@ -26,3 +26,7 @@ package-lock.json
 !_sass/vendors/
 !_sass/vendors/**
 assets/js/dist
+_site/
+.jekyll-cache/
+.sass-cache/
+node_modules/

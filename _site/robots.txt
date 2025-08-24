@@ -1,5 +1,0 @@
-User-agent: *
-
-Disallow: /norobots/
-
-Sitemap: https://website-4jv.pages.dev/blog/sitemap.xml
