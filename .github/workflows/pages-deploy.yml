@@ -56,6 +56,7 @@ jobs:
         run: |
           if grep -R "ahmad-khatib.com" _site; then
             echo "ERROR: Found old domain in built site. Update _config.yml or purge caches."
+            exit 1
           fi
 
       # 7) Validate built HTML to catch broken asset paths early
@@ -63,7 +64,7 @@ jobs:
       - name: HTML Proofer
         run: |
           bundle exec htmlproofer ./_site \
-            --check-html \
+            --checks html \
             --allow-hash-href \
             --empty-alt-ignore \
             --url-ignore "/localhost/"
@@ -76,7 +77,7 @@ jobs:
           TOKEN: ${{ secrets.PERSONAL }} # PAT with repo scope on target repo
         run: |
           set -euo pipefail
-          git config --global user.name  "github-actions[bot]"
+          git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git clone https://x-access-token:${TOKEN}@github.com/${REPO} temp-main
