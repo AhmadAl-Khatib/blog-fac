@@ -1,0 +1,261 @@
+{% comment %}
+Elite-level dynamic schema for Blog index and Blog posts
+Uses jekyll-last-modified-at for accurate dateModified values.
+{% endcomment %}
+
+{% if page.layout == "home" or page.url == site.baseurl or page.url == site.baseurl | append: "/" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    /* ===== WebSite entity ===== */
+    {
+      "@type": "WebSite",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#website",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "name": "{{ site.title | escape }}",
+      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "inLanguage": "{{ site.lang }}"
+    },
+
+    /* ===== WebPage entity ===== */
+    {
+      "@type": "WebPage",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#webpage",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "name": {{ page.title | default: "مدونة " | append: site.title | jsonify }},
+      "inLanguage": "{{ site.lang }}",
+      "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#website" },
+      {% if paginator.page == 1 %}
+      "mainEntity": { "@id": "{{ site.url }}{{ site.baseurl }}/#blog" },
+      {% endif %}
+      "breadcrumb": { "@id": "{{ site.url }}{{ site.baseurl }}/#breadcrumb" }
+    },
+
+    /* ===== Breadcrumb ===== */
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#breadcrumb",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": "{{ site.url }}/" },
+        { "@type": "ListItem", "position": 2, "name": "المدونة", "item": "{{ site.url }}{{ site.baseurl }}/" }
+      ]
+    },
+
+    /* ===== Blog entity ===== */
+    {
+      "@type": "Blog",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#blog",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "name": {{ page.title | default: "مدونة " | append: site.title | jsonify }},
+      "description": {{ page.description | default: site.description | jsonify }},
+      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "author": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "inLanguage": "{{ site.lang }}",
+      "dateCreated": "{% assign first_post = site.posts | last %}{{ first_post.date | date_to_xmlschema }}",
+      "dateModified": "{{ page.last_modified_at | date_to_xmlschema }}",
+      "mainEntityOfPage": { "@id": "{{ site.url }}{{ site.baseurl }}/#webpage" },
+      "about": [
+        { "@type": "Thing", "name": "برمجة" },
+        { "@type": "Thing", "name": "ريادة أعمال" },
+        { "@type": "Thing", "name": "تحسين محركات البحث" }
+      ],
+      "genre": ["مقالات رأي", "تحليل تقني"],
+      "contentLocation": { "@type": "Place", "name": "Lebanon" },
+      "image": {
+        "@type": "ImageObject",
+        "url": "{{ site.url }}{{ site.social_preview_image }}",
+        "contentUrl": "{{ site.url }}{{ site.social_preview_image }}",
+        "width": 1200,
+        "height": 630
+      }
+    },
+
+    /* ===== ItemList of posts ===== */
+    {
+      "@type": "ItemList",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#list",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "name": "أحدث المقالات",
+      "itemListElement": [
+        {% assign counter = 1 %}
+        {% for post in paginator.posts %}
+        {
+          "@type": "ListItem",
+          "position": {{ counter }},
+          "url": "{{ site.url }}{{ post.url }}",
+          "name": {{ post.title | jsonify }}{% if post.image %},
+          "image": {
+            "@type": "ImageObject",
+            "url": "{{ site.url }}{{ post.image.path | default: post.image }}",
+            "contentUrl": "{{ site.url }}{{ post.image.path | default: post.image }}",
+            "width": 1200,
+            "height": 675
+          }{% endif %}
+        }{% if forloop.last == false %},{% endif %}
+        {% assign counter = counter | plus: 1 %}
+        {% endfor %}
+      ]
+    }
+  ]
+}
+</script>
+{% endif %}
+
+{% if page.layout == "post" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+
+    /* ===== WebSite entity ===== */
+    {
+      "@type": "WebSite",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#website",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "name": "{{ site.title | escape }}",
+      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "inLanguage": "{{ site.lang }}"
+    },
+
+    /* ===== WebPage entity ===== */
+    {
+      "@type": "WebPage",
+      "@id": "{{ site.url }}{{ page.url }}#webpage",
+      "url": "{{ site.url }}{{ page.url }}",
+      "name": "{{ page.title | escape }}",
+      "inLanguage": "{{ page.lang | default: site.lang }}",
+      "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#website" },
+      "breadcrumb": { "@id": "{{ site.url }}{{ page.url }}#breadcrumb" },
+      "primaryImageOfPage": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
+      "description": "{{ page.description | escape }}",
+      "mainEntity": { "@id": "{{ site.url }}{{ page.url }}#blogposting" },
+      "potentialAction": [
+        { "@type": "ReadAction", "target": ["{{ site.url }}{{ page.url }}"] },
+        { "@type": "CommentAction", "target": ["{{ site.url }}{{ page.url }}#comments"] }
+      ]
+    },
+
+    /* ===== Breadcrumb ===== */
+    {
+      "@type": "BreadcrumbList",
+      "@id": "{{ site.url }}{{ page.url }}#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "{{ site.schema.breadcrumb.home_name | default: 'الرئيسية' }}",
+          "item": "{{ site.url }}/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "{{ site.title | escape }}",
+          "item": "{{ site.url }}{{ site.baseurl }}/"
+        }
+        {% assign pos = 3 %}
+        {% for cat in page.categories %}
+        ,{
+          "@type": "ListItem",
+          "position": {{ pos }},
+          "name": "{{ cat | escape }}",
+          "item": "{{ site.url }}{{ site.baseurl }}/categories/{{ cat | slugify }}/"
+        }
+        {% assign pos = pos | plus:1 %}
+        {% endfor %}
+      ]
+    },
+
+    /* ===== BlogPosting entity ===== */
+    {
+      "@type": "BlogPosting",
+      "@id": "{{ site.url }}{{ page.url }}#blogposting",
+      "headline": "{{ page.title | escape }}",
+      "description": "{{ page.description | escape }}",
+      "image": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
+      "author": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "dateCreated": "{{ page.date | date_to_xmlschema }}",
+      "datePublished": "{{ page.date | date_to_xmlschema }}",
+      "dateModified": "{{ page.last_modified_at | date_to_xmlschema | default: page.date | date_to_xmlschema }}",
+      "mainEntityOfPage": { "@id": "{{ site.url }}{{ page.url }}#webpage" },
+      "mainEntity": { "@id": "{{ site.url }}{{ site.baseurl }}/#blog" },
+      "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#blog" },
+      "articleSection": "{{ page.categories[0] | default: '' }}",
+      "inLanguage": "{{ page.lang | default: site.lang }}",
+      "keywords": [
+        {% assign all_keywords = page.tags | default: empty %}
+        {% assign all_keywords = all_keywords | concat: page.categories | default: empty %}
+               {% for kw in all_keywords %}
+          {{ kw | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      ],
+      "wordCount": "{{ page.content | number_of_words }}",
+      "about": [
+        {% assign about_array = page.tags | default: empty %}
+        {% assign about_array = about_array | concat: page.categories | default: empty %}
+        {% if page.schema_about %}
+          {% assign schema_about_array = page.schema_about | split: "," %}
+          {% assign about_array = about_array | concat: schema_about_array %}
+        {% endif %}
+        {% for item in about_array %}
+          {{ item | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      ],
+      "genre": [
+        {% assign genre_array = page.genre | default: empty %}
+        {% if genre_array == empty %}
+          {% assign genre_array = page.categories | default: empty %}
+        {% endif %}
+        {% if genre_array == empty %}
+          {% assign genre_array = page.tags | default: empty %}
+        {% endif %}
+        {% if genre_array == empty %}
+          {% assign genre_array = "مدونة" | split: "," %}
+        {% endif %}
+        {% for g in genre_array %}
+          {{ g | jsonify }}{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      ],
+      {% if page.content_location %}
+      "contentLocation": { "@type": "Place", "name": "{{ page.content_location }}" }
+      {% endif %}
+    },
+
+    /* ===== ImageObject for post main image ===== */
+    {
+      "@type": "ImageObject",
+      "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage",
+      "url": "{{ site.url }}{{ page.image | default: site.default_image }}",
+      "contentUrl": "{{ site.url }}{{ page.image | default: site.default_image }}",
+      "width": "{{ site.schema.image.width | default: 1200 }}",
+      "height": "{{ site.schema.image.height | default: 630 }}"
+    },
+
+    /* ===== Person entity ===== */
+    {
+      "@type": "Person",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#person",
+      "name": "{{ site.social.name | default: site.title | escape }}",
+      "url": "{{ site.url }}",
+      "image": { "@type": "ImageObject", "url": "{{ site.url }}{{ site.avatar | default: '/assets/img/avatar.webp' }}" },
+      "jobTitle": "{{ site.schema.person.job_title | default: 'كاتب ومؤلف' }}",
+      "sameAs": [
+        {% for link in site.social.links %}
+          "{{ link }}"{% unless forloop.last %}, {% endunless %}
+        {% endfor %}
+      ]
+    },
+
+    /* ===== Blog container entity ===== */
+    {
+      "@type": "Blog",
+      "@id": "{{ site.url }}{{ site.baseurl }}/#blog",
+      "name": "{{ site.tagline | default: site.title | escape }}",
+      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" }
+    }
+  ]
+}
+</script>
+{% endif %}

@@ -1,0 +1,90 @@
+name: Build and Deploy Blog
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: blog-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Checkout with submodules and full history for jekyll-last-modified-at etc.
+      - name: Checkout repo with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      # 2) Ruby + Bundler cache
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2
+          bundler-cache: true
+
+      # 3) Ensure Gemfile.lock includes Linux platform
+      - name: Verify Gemfile.lock platform
+        run: |
+          if ! grep -q "x86_64-linux" Gemfile.lock; then
+            echo "ERROR: Gemfile.lock missing Linux platform. Run 'bundle lock --add-platform x86_64-linux' locally and commit."
+            exit 1
+          fi
+
+      # 4) Sanity log of theme assets revision
+      - name: Show chirpy static assets revision
+        run: |
+          git submodule status || true
+          ls -la assets/lib || true
+
+      # 5) Build site in production; rely on _config.yml url + baseurl
+      - name: Build Jekyll site (production)
+        env:
+          JEKYLL_ENV: production
+        run: bundle exec jekyll build --destination ./_site
+
+      # 6) Fail fast if old domain or wrong baseurl still in HTML
+      - name: Check for stale URLs
+        run: |
+          if grep -R "ahmad-khatib.com" _site; then
+            echo "ERROR: Found old domain in built site. Update _config.yml or purge caches."
+            exit 1
+          fi
+
+      # 7) Validate built HTML to catch broken asset paths early
+      # Requires html-proofer in your Gemfile
+      - name: HTML Proofer
+        run: |
+          bundle exec htmlproofer ./_site \
+            --check-html \
+            --allow-hash-href \
+            --empty-alt-ignore \
+            --url-ignore "/localhost/"
+
+      # 8) Push _site to main website repo under /blog using rsync --delete
+      - name: Push _site to main website repo
+        env:
+          REPO: AhmadAl-Khatib/website
+          BRANCH: main
+          TOKEN: ${{ secrets.PERSONAL }} # PAT with repo scope on target repo
+        run: |
+          set -euo pipefail
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone https://x-access-token:${TOKEN}@github.com/${REPO} temp-main
+          mkdir -p temp-main/blog
+          rsync -a --delete _site/ temp-main/blog/
+
+          cd temp-main
+          git add blog -A
+          git commit -m "Update blog HTML" || echo "No changes"
+          git push origin ${BRANCH}
