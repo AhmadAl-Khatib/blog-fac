@@ -17,21 +17,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout with submodules and full history for jekyll-last-modified-at etc.
+      # 1) Checkout with submodules and full history
       - name: Checkout repo with submodules
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
-      # 2) Ruby + Bundler cache
+      # 2) Set up Node and build Chirpy assets
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build Chirpy JS/CSS
+        run: npm run build
+
+      # 3) Ruby + Bundler cache
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
           bundler-cache: true
 
-      # 3) Ensure Gemfile.lock includes Linux platform
+      # 4) Ensure Gemfile.lock includes Linux platform
       - name: Verify Gemfile.lock platform
         run: |
           if ! grep -q "x86_64-linux" Gemfile.lock; then
@@ -39,27 +51,27 @@ jobs:
             exit 1
           fi
 
-      # 4) Sanity log of theme assets revision
+      # 5) Sanity log of theme assets revision
       - name: Show chirpy static assets revision
         run: |
           git submodule status || true
           ls -la assets/lib || true
+          ls -la assets/js/dist || true   # <-- Added to confirm JS built
 
-      # 5) Build site in production; rely on _config.yml url + baseurl
+      # 6) Build site in production
       - name: Build Jekyll site (production)
         env:
           JEKYLL_ENV: production
         run: bundle exec jekyll build --destination ./_site
 
-      # 6) Fail fast if old domain or wrong baseurl still in HTML
+      # 7) Fail fast if old domain or wrong baseurl still in HTML
       - name: Check for stale URLs
         run: |
           if grep -R "ahmad-khatib.com" _site; then
             echo "ERROR: Found old domain in built site. Update _config.yml or purge caches."
           fi
 
-      # 7) Validate built HTML to catch broken asset paths early
-      # Requires html-proofer in your Gemfile
+      # 8) Validate built HTML
       - name: HTML Proofer
         run: |
           bundle exec htmlproofer ./_site \
@@ -68,12 +80,12 @@ jobs:
             --ignore-missing-alt \
             --ignore-url "/localhost/"
 
-      # 8) Push _site to main website repo under /blog using rsync --delete
+      # 9) Push _site to main website repo under /blog
       - name: Push _site to main website repo
         env:
           REPO: AhmadAl-Khatib/website
           BRANCH: main
-          TOKEN: ${{ secrets.PERSONAL }} # PAT with repo scope on target repo
+          TOKEN: ${{ secrets.PERSONAL }}
         run: |
           set -euo pipefail
           git config --global user.name "github-actions[bot]"
