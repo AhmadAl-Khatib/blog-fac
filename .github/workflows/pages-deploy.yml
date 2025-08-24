@@ -66,7 +66,7 @@ jobs:
             --checks html \
             --allow-hash-href \
             --ignore-missing-alt \
-            --url-ignore "/localhost/"
+            --ignore-url "/localhost/"
 
       # 8) Push _site to main website repo under /blog using rsync --delete
       - name: Push _site to main website repo
