@@ -243,3 +243,6 @@ schema:
   breadcrumb:
     home_name: "الرئيسية"     # homepage label
     blog_name: "المدونة"      # blog main page label
+
+include:
+  - assets/js/dist
