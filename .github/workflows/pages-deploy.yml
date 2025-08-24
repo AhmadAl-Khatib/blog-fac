@@ -65,7 +65,7 @@ jobs:
           bundle exec htmlproofer ./_site \
             --checks html \
             --allow-hash-href \
-            --empty-alt-ignore \
+            --ignore-missing-alt \
             --url-ignore "/localhost/"
 
       # 8) Push _site to main website repo under /blog using rsync --delete
