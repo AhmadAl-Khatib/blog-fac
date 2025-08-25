@@ -8,6 +8,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
 {
   "@context": "https://schema.org",
   "@graph": [
+
     /* ===== WebSite entity ===== */
     {
       "@type": "WebSite",
@@ -56,16 +57,26 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "dateModified": "{{ page.last_modified_at | date_to_xmlschema }}",
       "mainEntityOfPage": { "@id": "{{ site.url }}{{ site.baseurl }}/#webpage" },
       "about": [
-        { "@type": "Thing", "name": "برمجة" },
-        { "@type": "Thing", "name": "ريادة أعمال" },
-        { "@type": "Thing", "name": "تحسين محركات البحث" }
+        {% assign blog_about = site.posts | map: "tags" | uniq | flatten %}
+        {% assign blog_about = blog_about | concat: site.posts | map: "categories" | uniq | flatten %}
+        {% for item in blog_about %}
+          { "@type": "Thing", "name": {{ item | jsonify }} }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
       ],
-      "genre": ["مقالات رأي", "تحليل تقني"],
+      "genre": [
+        {% assign blog_genre = site.posts | map: "categories" | uniq | flatten %}
+        {% if blog_genre == empty %}
+          {% assign blog_genre = ["مقالات رأي", "تحليل تقني"] %}
+        {% endif %}
+        {% for g in blog_genre %}
+          {{ g | jsonify }}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
       "contentLocation": { "@type": "Place", "name": "Lebanon" },
       "image": {
         "@type": "ImageObject",
-        "url": "{{ site.url }}{{ site.social_preview_image }}",
-        "contentUrl": "{{ site.url }}{{ site.social_preview_image }}",
+        "url": "{{ site.url }}{{ site.social_preview_image | default: site.default_image }}",
+        "contentUrl": "{{ site.url }}{{ site.social_preview_image | default: site.default_image }}",
         "width": 1200,
         "height": 630
       }
@@ -87,8 +98,8 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           "name": {{ post.title | jsonify }}{% if post.image %},
           "image": {
             "@type": "ImageObject",
-            "url": "{{ site.url }}{{ post.image.path | default: post.image }}",
-            "contentUrl": "{{ site.url }}{{ post.image.path | default: post.image }}",
+            "url": "{{ site.url }}{{ post.image | default: site.default_image }}",
+            "contentUrl": "{{ site.url }}{{ post.image | default: site.default_image }}",
             "width": 1200,
             "height": 675
           }{% endif %}
@@ -97,9 +108,11 @@ Uses jekyll-last-modified-at for accurate dateModified values.
         {% endfor %}
       ]
     }
+
   ]
 }
 </script>
+
 {% endif %}
 
 {% if page.layout == "post" %}
@@ -128,7 +141,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#website" },
       "breadcrumb": { "@id": "{{ site.url }}{{ page.url }}#breadcrumb" },
       "primaryImageOfPage": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
-      "description": "{{ page.description | escape }}",
+      "description": "{{ page.description | escape | strip_newlines }}",
       "mainEntity": { "@id": "{{ site.url }}{{ page.url }}#blogposting" },
       "potentialAction": [
         { "@type": "ReadAction", "target": ["{{ site.url }}{{ page.url }}"] },
@@ -153,16 +166,18 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           "name": "{{ site.title | escape }}",
           "item": "{{ site.url }}{{ site.baseurl }}/"
         }
-        {% assign pos = 3 %}
-        {% for cat in page.categories %}
-        ,{
-          "@type": "ListItem",
-          "position": {{ pos }},
-          "name": "{{ cat | escape }}",
-          "item": "{{ site.url }}{{ site.baseurl }}/categories/{{ cat | slugify }}/"
-        }
-        {% assign pos = pos | plus:1 %}
-        {% endfor %}
+        {% if page.categories.size > 0 %}
+          {% assign pos = 3 %}
+          {% for cat in page.categories %}
+          ,{
+            "@type": "ListItem",
+            "position": {{ pos }},
+            "name": "{{ cat | escape }}",
+            "item": "{{ site.url }}{{ site.baseurl }}/categories/{{ cat | slugify }}/"
+          }
+          {% assign pos = pos | plus:1 %}
+          {% endfor %}
+        {% endif %}
       ]
     },
 
@@ -171,11 +186,11 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "@type": "BlogPosting",
       "@id": "{{ site.url }}{{ page.url }}#blogposting",
       "headline": "{{ page.title | escape }}",
-      "description": "{{ page.description | escape }}",
+      "description": "{{ page.description | escape | strip_newlines }}",
       "image": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
       "author": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
       "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
-      "dateCreated": "{{ page.date | date_to_xmlschema }}",
+      "dateCreated": "{{ page.date_created | date_to_xmlschema | default: page.date | date_to_xmlschema }}",
       "datePublished": "{{ page.date | date_to_xmlschema }}",
       "dateModified": "{{ page.last_modified_at | date_to_xmlschema | default: page.date | date_to_xmlschema }}",
       "mainEntityOfPage": { "@id": "{{ site.url }}{{ page.url }}#webpage" },
@@ -186,7 +201,8 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "keywords": [
         {% assign all_keywords = page.tags | default: empty %}
         {% assign all_keywords = all_keywords | concat: page.categories | default: empty %}
-               {% for kw in all_keywords %}
+        {% assign all_keywords = all_keywords | uniq %}
+        {% for kw in all_keywords %}
           {{ kw | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
         {% endfor %}
       ],
@@ -198,21 +214,16 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           {% assign schema_about_array = page.schema_about | split: "," %}
           {% assign about_array = about_array | concat: schema_about_array %}
         {% endif %}
+        {% assign about_array = about_array | uniq %}
         {% for item in about_array %}
           {{ item | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
         {% endfor %}
       ],
       "genre": [
         {% assign genre_array = page.genre | default: empty %}
-        {% if genre_array == empty %}
-          {% assign genre_array = page.categories | default: empty %}
-        {% endif %}
-        {% if genre_array == empty %}
-          {% assign genre_array = page.tags | default: empty %}
-        {% endif %}
-        {% if genre_array == empty %}
-          {% assign genre_array = "مدونة" | split: "," %}
-        {% endif %}
+        {% if genre_array == empty %}{% assign genre_array = page.categories | default: empty %}{% endif %}
+        {% if genre_array == empty %}{% assign genre_array = page.tags | default: empty %}{% endif %}
+        {% if genre_array == empty %}{% assign genre_array = "مدونة" | split: "," %}{% endif %}
         {% for g in genre_array %}
           {{ g | jsonify }}{% unless forloop.last %}, {% endunless %}
         {% endfor %}
@@ -228,8 +239,8 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage",
       "url": "{{ site.url }}{{ page.image | default: site.default_image }}",
       "contentUrl": "{{ site.url }}{{ page.image | default: site.default_image }}",
-      "width": "{{ site.schema.image.width | default: 1200 }}",
-      "height": "{{ site.schema.image.height | default: 630 }}"
+      "width": "{{ page.image_width | default: site.schema.image.width | default: 1200 }}",
+      "height": "{{ page.image_height | default: site.schema.image.height | default: 630 }}"
     },
 
     /* ===== Person entity ===== */
@@ -242,7 +253,9 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "jobTitle": "{{ site.schema.person.job_title | default: 'كاتب ومؤلف' }}",
       "sameAs": [
         {% for link in site.social.links %}
-          "{{ link }}"{% unless forloop.last %}, {% endunless %}
+          {% if link != "" %}
+            "{{ link }}"{% unless forloop.last %}, {% endunless %}
+          {% endif %}
         {% endfor %}
       ]
     },
