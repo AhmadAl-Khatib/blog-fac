@@ -251,3 +251,6 @@ schema:
   url: "https://ahmad-khatib.com"
 include:
   - assets/js/dist
+
+seo:
+  json_ld: false
