@@ -173,47 +173,65 @@ Uses jekyll-last-modified-at for accurate dateModified values.
     /* ===== WebSite entity ===== */
     {
       "@type": "WebSite",
-      "@id": "{{ site.url }}{{ site.baseurl }}/#website",
-      "url": "{{ site.url }}{{ site.baseurl }}/",
+      "@id": "{{ site.schema.website_id }}",
+      "url": "{{ site.schema.url }}{{ site.baseurl }}/",
       "name": "{{ site.title | escape }}",
-      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
-      "inLanguage": "{{ site.lang }}"
+      "publisher": { "@id": "{{ site.schema.person_id }}" },
+      "inLanguage": "{{ site.lang }}",
+      "mainEntityOfPage": {
+        "@id": "{{ site.schema.url }}{{ page.url }}#webpage"
+      }
     },
 
     /* ===== WebPage entity ===== */
     {
       "@type": "WebPage",
-      "@id": "{{ site.url }}{{ page.url }}#webpage",
-      "url": "{{ site.url }}{{ page.url }}",
+      "@id": "{{ site.schema.url }}{{ page.url }}#webpage",
+      "url": "{{ site.schema.url }}{{ page.url }}",
       "name": "{{ page.title | escape }}",
       "inLanguage": "{{ page.lang | default: site.lang }}",
-      "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#website" },
-      "breadcrumb": { "@id": "{{ site.url }}{{ page.url }}#breadcrumb" },
-      "primaryImageOfPage": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
+      "isPartOf": { "@id": "{{ site.schema.website_id }}" },
+      "breadcrumb": { "@id": "{{ site.schema.url }}{{ page.url }}#breadcrumb" },
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "{{ site.schema.url }}{{ page.image | default: site.schema.default_image }}",
+        "width": {{ site.schema.image.width }},
+        "height": {{ site.schema.image.height }},
+        "caption": "الصورة الرئيسية للمقالة",
+        "representativeOfPage": true
+      },
       "description": "{{ page.description | escape | strip_newlines }}",
-      "mainEntity": { "@id": "{{ site.url }}{{ page.url }}#blogposting" },
+      "mainEntity": { "@id": "{{ site.schema.url }}{{ page.url }}#blogposting" },
+      "alternatePage": [
+        {
+          "@type": "WebPage",
+          "url": "{{ site.schema.url }}/en{{ page.url }}",
+          "inLanguage": "en",
+          "name": "Ahmad Al Khatib – {{ page.title | escape }}"
+        }
+      ],
       "potentialAction": [
-        { "@type": "ReadAction", "target": ["{{ site.url }}{{ page.url }}"] },
-        { "@type": "CommentAction", "target": ["{{ site.url }}{{ page.url }}#comments"] }
+        { "@type": "ReadAction", "target": ["{{ site.schema.url }}{{ page.url }}"] },
+        { "@type": "CommentAction", "target": ["{{ site.schema.url }}{{ page.url }}#comments"] }
       ]
     },
 
-    /* ===== Breadcrumb ===== */
+    /* ===== BreadcrumbList ===== */
     {
       "@type": "BreadcrumbList",
-      "@id": "{{ site.url }}{{ page.url }}#breadcrumb",
+      "@id": "{{ site.schema.url }}{{ page.url }}#breadcrumb",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "{{ site.schema.breadcrumb.home_name | default: 'الرئيسية' }}",
-          "item": "{{ site.url }}/"
+          "name": "{{ site.schema.breadcrumb.home_name }}",
+          "item": "{{ site.schema.url }}/"
         },
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "{{ site.title | escape }}",
-          "item": "{{ site.url }}{{ site.baseurl }}/"
+          "name": "{{ site.schema.breadcrumb.blog_name }}",
+          "item": "{{ site.schema.url }}{{ site.baseurl }}/"
         }
         {% if page.categories.size > 0 %}
           {% assign pos = 3 %}
@@ -222,9 +240,9 @@ Uses jekyll-last-modified-at for accurate dateModified values.
             "@type": "ListItem",
             "position": {{ pos }},
             "name": "{{ cat | escape }}",
-            "item": "{{ site.url }}{{ site.baseurl }}/categories/{{ cat | slugify }}/"
+            "item": "{{ site.schema.url }}{{ site.baseurl }}/categories/{{ cat | slugify }}/"
           }
-          {% assign pos = pos | plus:1 %}
+          {% assign pos = pos | plus: 1 %}
           {% endfor %}
         {% endif %}
       ]
@@ -233,24 +251,31 @@ Uses jekyll-last-modified-at for accurate dateModified values.
     /* ===== BlogPosting entity ===== */
     {
       "@type": "BlogPosting",
-      "@id": "{{ site.url }}{{ page.url }}#blogposting",
+      "@id": "{{ site.schema.url }}{{ page.url }}#blogposting",
       "headline": "{{ page.title | escape }}",
       "description": "{{ page.description | escape | strip_newlines }}",
-      "image": { "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage" },
-      "author": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
-      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" },
+      "image": {
+        "@type": "ImageObject",
+        "@id": "{{ site.schema.url }}{{ page.image | default: site.schema.default_image }}#primaryimage",
+        "url": "{{ site.schema.url }}{{ page.image | default: site.schema.default_image }}",
+        "contentUrl": "{{ site.schema.url }}{{ page.image | default: site.schema.default_image }}",
+        "width": {{ site.schema.image.width }},
+        "height": {{ site.schema.image.height }}
+      },
+      "author": { "@id": "{{ site.schema.person_id }}" },
+      "publisher": { "@id": "{{ site.schema.person_id }}" },
       "dateCreated": "{{ page.date_created | date_to_xmlschema | default: page.date | date_to_xmlschema }}",
       "datePublished": "{{ page.date | date_to_xmlschema }}",
       "dateModified": "{{ page.last_modified_at | date_to_xmlschema | default: page.date | date_to_xmlschema }}",
-      "mainEntityOfPage": { "@id": "{{ site.url }}{{ page.url }}#webpage" },
-      "mainEntity": { "@id": "{{ site.url }}{{ site.baseurl }}/#blog" },
-      "isPartOf": { "@id": "{{ site.url }}{{ site.baseurl }}/#blog" },
+      "mainEntityOfPage": { "@id": "{{ site.schema.url }}{{ page.url }}#webpage" },
+      "mainEntity": { "@id": "{{ site.schema.url }}{{ site.baseurl }}/#blog" },
+      "isPartOf": { "@id": "{{ site.schema.url }}{{ site.baseurl }}/#blog" },
       "articleSection": "{{ page.categories[0] | default: '' }}",
       "inLanguage": "{{ page.lang | default: site.lang }}",
       "keywords": [
         {% assign all_keywords = page.tags | default: empty %}
         {% assign all_keywords = all_keywords | concat: page.categories | default: empty %}
-        {% assign all_keywords = all_keywords | uniq %}
+        {% assign all_keywords = all_keywords | uniq | compact %}
         {% for kw in all_keywords %}
           {{ kw | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
         {% endfor %}
@@ -263,9 +288,9 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           {% assign schema_about_array = page.schema_about | split: "," %}
           {% assign about_array = about_array | concat: schema_about_array %}
         {% endif %}
-        {% assign about_array = about_array | uniq %}
+        {% assign about_array = about_array | uniq | compact %}
         {% for item in about_array %}
-          {{ item | strip | jsonify }}{% unless forloop.last %}, {% endunless %}
+          { "@type": "Thing", "name": {{ item | strip | jsonify }} }{% unless forloop.last %}, {% endunless %}
         {% endfor %}
       ],
       "genre": [
@@ -273,50 +298,43 @@ Uses jekyll-last-modified-at for accurate dateModified values.
         {% if genre_array == empty %}{% assign genre_array = page.categories | default: empty %}{% endif %}
         {% if genre_array == empty %}{% assign genre_array = page.tags | default: empty %}{% endif %}
         {% if genre_array == empty %}{% assign genre_array = "مدونة" | split: "," %}{% endif %}
+        {% assign genre_array = genre_array | uniq | compact %}
         {% for g in genre_array %}
           {{ g | jsonify }}{% unless forloop.last %}, {% endunless %}
         {% endfor %}
       ],
       {% if page.content_location %}
       "contentLocation": { "@type": "Place", "name": "{{ page.content_location }}" }
+      {% else %}
+      "contentLocation": { "@type": "Place", "name": "{{ site.schema.content_location }}" }
       {% endif %}
-    },
-
-    /* ===== ImageObject for post main image ===== */
-    {
-      "@type": "ImageObject",
-      "@id": "{{ site.url }}{{ page.image | default: site.default_image }}#primaryimage",
-      "url": "{{ site.url }}{{ page.image | default: site.default_image }}",
-      "contentUrl": "{{ site.url }}{{ page.image | default: site.default_image }}",
-      "width": "{{ page.image_width | default: site.schema.image.width | default: 1200 }}",
-      "height": "{{ page.image_height | default: site.schema.image.height | default: 630 }}"
     },
 
     /* ===== Person entity ===== */
     {
       "@type": "Person",
-      "@id": "{{ site.url }}{{ site.baseurl }}/#person",
-      "name": "{{ site.social.name | default: site.title | escape }}",
-      "url": "{{ site.url }}",
-      "image": { "@type": "ImageObject", "url": "{{ site.url }}{{ site.avatar | default: '/assets/img/avatar.webp' }}" },
-      "jobTitle": "{{ site.schema.person.job_title | default: 'كاتب ومؤلف' }}",
+      "@id": "{{ site.schema.person_id }}",
+      "name": "{{ site.schema.publisher_name }}",
+      "jobTitle": "{{ site.schema.person.job_title }}",
+      "mainEntityOfPage": {
+        "@id": "{{ site.schema.url }}{{ page.url }}#webpage"
+      },
       "sameAs": [
-        {% for link in site.social.links %}
-          {% if link != "" %}
-            "{{ link }}"{% unless forloop.last %}, {% endunless %}
-          {% endif %}
-        {% endfor %}
+        "https://twitter.com/alkhatib_ahmad1",
+        "https://www.linkedin.com/in/ahmadalkhatib",
+        "{{ site.schema.url }}/about/"
       ]
     },
 
     /* ===== Blog container entity ===== */
     {
       "@type": "Blog",
-      "@id": "{{ site.url }}{{ site.baseurl }}/#blog",
-      "name": "{{ site.tagline | default: site.title | escape }}",
-      "url": "{{ site.url }}{{ site.baseurl }}/",
-      "publisher": { "@id": "{{ site.url }}{{ site.baseurl }}/#person" }
+      "@id": "{{ site.schema.url }}{{ site.baseurl }}/#blog",
+      "name": "{{ site.title | escape }}",
+      "url": "{{ site.schema.url }}{{ site.baseurl }}/",
+      "publisher": { "@id": "{{ site.schema.person_id }}" }
     }
+
   ]
 }
 </script>
