@@ -34,6 +34,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       "mainEntity": { "@id": "{{ site.schema.url }}{{ site.baseurl }}/#blog" },
       {% endif %}
       "breadcrumb": { "@id": "{{ site.schema.url }}{{ site.baseurl }}{% if paginator.page > 1 %}/page{{ paginator.page }}/{% endif %}#breadcrumb" },
+      {%- comment -%}
       "alternatePage": [
         {
           "@type": "WebPage",
@@ -42,6 +43,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           "name": "Ahmad Al Khatib Blog"
         }
       ],
+      {%- endcomment -%}
       "primaryImageOfPage": {
         "@type": "ImageObject",
         "url": "{{ site.schema.url }}{{ site.social_preview_image | default: site.schema.default_image }}",
@@ -202,6 +204,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
       },
       "description": "{{ page.description | escape | strip_newlines }}",
       "mainEntity": { "@id": "{{ site.schema.url }}{{ page.url }}#blogposting" },
+      {%- comment -%}
       "alternatePage": [
         {
           "@type": "WebPage",
@@ -210,6 +213,7 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           "name": "Ahmad Al Khatib – {{ page.title | escape }}"
         }
       ],
+      {%- endcomment -%}
       "potentialAction": [
         { "@type": "ReadAction", "target": ["{{ site.schema.url }}{{ page.url }}"] },
         { "@type": "CommentAction", "target": ["{{ site.schema.url }}{{ page.url }}#comments"] }
