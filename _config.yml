@@ -243,6 +243,11 @@ schema:
   breadcrumb:
     home_name: "الرئيسية"     # homepage label
     blog_name: "المدونة"      # blog main page label
-
+  person_id: "https://ahmad-khatib.com/#person"
+  website_id: "https://ahmad-khatib.com/#website"
+  content_location: "Lebanon"
+  default_image: "/assets/img/ahmad-al-khatib-banner.webp"
+  publisher_name: "أحمد الخطيب"
+  url: "https://ahmad-khatib.com"
 include:
   - assets/js/dist
