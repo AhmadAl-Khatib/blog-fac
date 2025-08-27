@@ -2,7 +2,7 @@
   Generate media resource final URL based on `site.cdn`, `page.media_subpath`
 
   Arguments:
-    src - optional, basic media resources path
+    src - required, basic media resources path
     subpath - optional, relative path of media resources
     absolute - optional, boolean, if true, generate absolute URL
 
@@ -10,32 +10,28 @@
     media resources URL
 {%- endcomment -%}
 
-{% if page.image == nil and include.src == nil %}
-  {%- assign url = "https://ahmad-khatib.com/blog/assets/img/ahmad-al-khatib-banner.webp" -%}
-{% else %}
-  {%- assign url = include.src | default: page.image -%}
+{% assign url = include.src %}
 
-  {%- if url -%}
-    {% unless url contains ':' %}
-      {%- comment -%} Add media resources subpath prefix {%- endcomment -%}
-      {% assign url = include.subpath | default: '' | append: '/' | append: url %}
+{%- if url -%}
+  {% unless url contains ':' %}
+    {%- comment -%} Add media resources subpath prefix {%- endcomment -%}
+    {% assign url = include.subpath | default: '' | append: '/' | append: url %}
 
-      {%- comment -%} Prepend CDN URL {%- endcomment -%}
-      {% if site.cdn %}
-        {% assign url = site.cdn | append: '/' | append: url %}
+    {%- comment -%} Prepend CND URL {%- endcomment -%}
+    {% if site.cdn %}
+      {% assign url = site.cdn | append: '/' | append: url %}
+    {% endif %}
+
+    {% assign url = url | replace: '///', '/' | replace: '//', '/' | replace: ':/', '://' %}
+
+    {% unless url contains '://' %}
+      {% if include.absolute %}
+        {% assign url = site.url | append: site.baseurl | append: url %}
+      {% else %}
+        {% assign url = site.baseurl | append: url %}
       {% endif %}
-
-      {% assign url = url | replace: '///', '/' | replace: '//', '/' | replace: ':/', '://' %}
-
-      {% unless url contains '://' %}
-        {% if include.absolute %}
-          {% assign url = site.url | append: site.baseurl | append: url %}
-        {% else %}
-          {% assign url = site.baseurl | append: url %}
-        {% endif %}
-      {% endunless %}
     {% endunless %}
-  {%- endif -%}
-{% endif %}
+  {% endunless %}
+{%- endif -%}
 
 {{- url -}}
