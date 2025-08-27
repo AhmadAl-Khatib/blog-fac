@@ -35,14 +35,14 @@
             <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
           </a>
         </li>
+        <!-- .nav-item -->
+      {% endfor %}
         <li class="nav-item">
           <a href="https://ahmad-khatib.com/" class="nav-link">
             <i class="fas fa-link"></i>
             <span>عودة الى الموقع</span>
           </a>
         </li>
-        <!-- .nav-item -->
-      {% endfor %}
     </ul>
   </nav>
 
