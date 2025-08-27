@@ -11,8 +11,9 @@ ahmad:
   bio: "الإدارة الديناميكية، العلاقات العامة، الذكاء الاصطناعي، والبرمجة."
   avatar: /assets/img/ahmad-al-khatib-profile-picture.webp
   url: https://ahmad-khatib.com/about/
-  sameAs:
+  sameAs:       
     - https://ahmad-khatib.com/
+    - https://ahmad-khatib.com/about/
     - https://ahmad-khatib.com/blog/
     - https://www.linkedin.com/in/alkhatibahmad/
     - https://twitter.com/alkhatib_ahmad1
