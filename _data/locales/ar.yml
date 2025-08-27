@@ -10,7 +10,7 @@ layout:
 # The tabs of sidebar
 tabs:
   # format: <filename_without_extension>: <value>
-  home: الرئيسية
+  home: جميع المقالات
   categories: الفئات
   tags: الوسوم
   archives: الأرشيف
