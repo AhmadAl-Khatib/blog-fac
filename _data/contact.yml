@@ -13,37 +13,37 @@
 - type: rss
   icon: "fas fa-rss"
   noblank: true
-
+  
 - type: linkedin
-  icon: "fas fa-linkedin"
+  icon: "fab fa-linkedin"
   url: "https://www.linkedin.com/in/alkhatibahmad/"
 
 - type: facebook
-  icon: "fas fa-facebook"
+  icon: "fab fa-facebook"
   url: "https://www.facebook.com/ahmad.khatib.9237244/"
 
 - type: instagram
-  icon: "fas fa-instagram"
+  icon: "fab fa-instagram"
   url: "https://www.instagram.com/alkhatib_ahmad1/"
 
 - type: youtube
-  icon: "fas fa-youtube"
+  icon: "fab fa-youtube"
   url: "https://www.youtube.com/@alkhatib_ahmad1/"
 
 - type: tiktok
-  icon: "fas fa-tiktok"
+  icon: "fab fa-tiktok"
   url: "https://www.tiktok.com/@alkhatib_ahmad1/"
 
 - type: snapchat
-  icon: "fas fa-snapchat"
+  icon: "fab fa-snapchat"
   url: "https://www.snapchat.com/add/alkhatib_ahmad1/"
 
 - type: amazon
-  icon: "fas fa-amazon"
+  icon: "fab fa-amazon"
   url: "https://www.amazon.com/author/ahmadalkhatib/"
 
 - type: goodreads
-  icon: "fas fa-goodreads"
+  icon: "fab fa-goodreads"
   url: "https://www.goodreads.com/author/show/981744.Ahmad_Al_Khatib/"
 
 # Uncomment and complete the url below to enable more contact options
