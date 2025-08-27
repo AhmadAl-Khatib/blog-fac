@@ -53,16 +53,16 @@ refactor: true
       <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
         {% assign card_body_col = '12' %}
 
-        {% assign img_candidate = post.image | default: "https://ahmad-khatib.com/blog/assets/img/ahmad-al-khatib-banner.webp" %}
-        {% if img_candidate %}
-          {% assign src = img_candidate.path | default: img_candidate %}
+        {% if post.image %}
+          {% assign src = post.image.path | default: post.image %}
           {% capture src %}{% include media-url.html src=src subpath=post.media_subpath %}{% endcapture %}
 
           {% assign alt = post.image.alt | xml_escape | default: 'Preview Image' %}
 
           {% assign lqip = null %}
-          {% if img_candidate.lqip %}
-            {% capture lqip_url %}{% include media-url.html src=img_candidate.lqip subpath=post.media_subpath %}{% endcapture %}
+
+          {% if post.image.lqip %}
+            {% capture lqip_url %}{% include media-url.html src=post.image.lqip subpath=post.media_subpath %}{% endcapture %}
             {% assign lqip = 'lqip="' | append: lqip_url | append: '"' %}
           {% endif %}
 
