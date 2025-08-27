@@ -67,7 +67,6 @@ refactor: true
           {% if post.image.lqip %}
             {% capture lqip_url %}{% include media-url.html src=post.image.lqip subpath=post.media_subpath %}{% endcapture %}
             {% assign lqip = 'lqip="' | append: lqip_url | append: '"' %}
-          {% endif %}
         {% endif %}
 
           <div class="col-md-5">
