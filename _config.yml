@@ -177,7 +177,7 @@ defaults:
       # DO NOT modify the following parameter unless you are confident enough
       # to update the code of all other post links in this project.
       permalink: /posts/:title/
-      image: "/assets/img/ahmad-al-khatib-banner.webp"
+      image: "assets/img/ahmad-al-khatib-banner.webp"
       author: "أحمد الخطيب"
       lang: "ar"
 
