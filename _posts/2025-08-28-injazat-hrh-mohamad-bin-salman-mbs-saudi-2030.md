@@ -9,7 +9,7 @@ tags: [محمد بن سلمان, السعودية, رؤية 2030, mbs, saudi vis
 author: ahmad                                     # Required. Single author ID from _data/authors.yml
 layout: post                                     # Optional. Usually "post" by default
 pin: true                                        # Optional. Set true to pin post to top of listing
-image: https://ahmad-khatib.com/blog/assets/img/mbs.webp
+image: "https://ahmad-khatib.com/blog/assets/img/mbs.webp"
 alt: "انجازات الأمير محمد بن سلمان"        # Alt text used in cards, SEO, social previews, schema
 show_image_in_post: false   # Featured image will NOT appear inside the post                                  # Optional. Embed video if set to true
 pin: true                                       # Optional. Keep post at top of list
