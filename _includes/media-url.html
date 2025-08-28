@@ -14,17 +14,10 @@
 
 {%- if url -%}
   {% unless url contains ':' %}
-    {%- assign baseurl = site.baseurl | default: '' -%}
-    {%- if url and baseurl and url | slice: 0, baseurl | downcase == baseurl | downcase -%}
-      {% assign url = url | remove_first: baseurl %}
-    {%- endif -%}
-    {%- if url startswith '/' -%}
-      {% assign url = url | remove_first: '/' %}
-    {%- endif -%}
     {%- comment -%} Add media resources subpath prefix {%- endcomment -%}
     {% assign url = include.subpath | default: '' | append: '/' | append: url %}
 
-    {%- comment -%} Prepend CDN URL {%- endcomment -%}
+    {%- comment -%} Prepend CND URL {%- endcomment -%}
     {% if site.cdn %}
       {% assign url = site.cdn | append: '/' | append: url %}
     {% endif %}
@@ -33,9 +26,9 @@
 
     {% unless url contains '://' %}
       {% if include.absolute %}
-        {% assign url = site.url | append: site.baseurl | append: '/' | append: url %}
+        {% assign url = site.url | append: site.baseurl | append: url %}
       {% else %}
-        {% assign url = site.baseurl | append: '/' | append: url %}
+        {% assign url = site.baseurl | append: url %}
       {% endif %}
     {% endunless %}
   {% endunless %}
