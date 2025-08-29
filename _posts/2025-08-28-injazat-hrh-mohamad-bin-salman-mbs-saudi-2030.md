@@ -18,6 +18,7 @@ pin: true
 image:
   path: /assets/img/mbs.webp     # 2‑space indent under `image:`
   alt: "الأمير محمد بن سلمان"
+show_image_in_post: false
 
 # ==========================
 # 📚 SCHEMA.ORG
