@@ -133,8 +133,8 @@ Uses jekyll-last-modified-at for accurate dateModified values.
           "name": {{ post.title | jsonify }}{% if post.image %},
           "image": {
             "@type": "ImageObject",
-            "url": "{{ site.schema.url }}{{ post.image | default: site.schema.default_image }}",
-            "contentUrl": "{{ site.schema.url }}{{ post.image | default: site.schema.default_image }}",
+            "url": "{{ site.schema.url }}{{ post.image.path | default: post.image | default: site.schema.default_image }}",
+            "contentUrl": "{{ site.schema.url }}{{ post.image.path | default: post.image | default: site.schema.default_image }}",
             "width": {{ site.schema.image.width }},
             "height": {{ site.schema.image.height }}
           }{% endif %}
