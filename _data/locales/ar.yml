@@ -52,6 +52,7 @@ notification:
 # ----- Posts related labels -----
 
 post:
+  pin_prompt: مثبت
   written_by: بواسطة
   posted: نشّر
   updated: حدّث
