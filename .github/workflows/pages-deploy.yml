@@ -54,6 +54,16 @@ jobs:
           JEKYLL_ENV: production
         run: bundle exec jekyll build --destination ./_site --trace --verbose
 
+      # 🆕 3.5) Replace .pages.dev with real domain in sitemap/robots
+      - name: Fix domain in sitemap and robots
+        run: |
+          set -e
+          for file in _site/sitemap.xml _site/robots.txt; do
+            if [ -f "$file" ]; then
+              sed -i 's|https://website-4jv.pages.dev|https://ahmad-khatib.com|g' "$file"
+            fi
+          done
+
       # 4) Push built site to main website repo under /blog
       - name: Push _site to main website repo
         env:
