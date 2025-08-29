@@ -25,7 +25,7 @@ default_image: "/assets/img/ahmad-al-khatib-banner.webp"
 
 # Fill in the protocol & hostname for your site.
 # E.g. 'https://username.github.io', note that it does not end with a '/'.
-url: "https://website-4jv.pages.dev"
+url: "https://ahmad-khatib.com"
 baseurl: "/blog"
 
 plugins:
