@@ -3,7 +3,7 @@
 # REQUIRED BASIC POST INFO
 # ==========================
 title: "لمن يسأل عن سبب إعجابي بصاحب السمو الملكي الأمير محمد بن سلمان"                          # Required. Appears in listings, browser tab, and schema.
-date: 2025-08-26 17:32:00 +0300                  # Required. Format: YYYY-MM-DD HH:MM:SS +/-TTTT
+date: 2025-08-28 17:32:00 +0300                  # Required. Format: YYYY-MM-DD HH:MM:SS +/-TTTT
 description: "فيديو من إعداد أحمد الخطيب يفند انجازات صاحب السمو الملكي ولي العهد السعودي الأمير محمد بن سلمان"
 categories: [رأي, السعودية]                           # Optional. Up to 2 levels. Used for grouping and schema.genre
 tags: [محمد بن سلمان, السعودية, رؤية 2030, mbs, saudi vision 2030]                       # Optional. Used for schema.keywords and schema.about
