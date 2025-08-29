@@ -2,19 +2,28 @@
 # ==========================
 # REQUIRED BASIC POST INFO
 # ==========================
-title: "لمن يسأل عن سبب إعجابي بصاحب السمو الملكي الأمير محمد بن سلمان"                          # Required. Appears in listings, browser tab, and schema.
-date: 2025-08-28 17:32:00 +0300                  # Required. Format: YYYY-MM-DD HH:MM:SS +/-TTTT
+title: "لمن يسأل عن سبب إعجابي بصاحب السمو الملكي الأمير محمد بن سلمان"
+date: 2025-08-28 17:32:00 +0300
 description: "فيديو من إعداد أحمد الخطيب يفند انجازات صاحب السمو الملكي ولي العهد السعودي الأمير محمد بن سلمان"
-categories: [رأي, السعودية]                           # Optional. Up to 2 levels. Used for grouping and schema.genre
-tags: [محمد بن سلمان, السعودية, رؤية 2030, mbs, saudi vision 2030]                       # Optional. Used for schema.keywords and schema.about
-author: ahmad                                     # Required. Single author ID from _data/authors.yml
-layout: post                                     # Optional. Usually "post" by default
-pin: true                                        # Optional. Set true to pin post to top of listing
+categories: [رأي, السعودية]
+tags: [محمد بن سلمان, السعودية, رؤية 2030, mbs, saudi vision 2030]
+author: ahmad
+layout: post
+lang: ar
+pin: true
+
+# ==========================
+# 🖼️ FEATURED IMAGE
+# ==========================
 image:
-    path: /assets/img/mbs.webp
-    alt: "الأمير محمد بن سلمان"
-pin: true                                       # Optional. Keep post at top of list
+  path: /assets/img/mbs.webp     # 2‑space indent under `image:`
+  alt: "الأمير محمد بن سلمان"
+
+# ==========================
+# 📚 SCHEMA.ORG
+# ==========================
 genre: ["سياسي", "اقتصادي"]
+
 ---
 
 # لمن يسأل عن سبب إعجابي بصاحب السمو الملكي الأمير محمد بن سلمان
